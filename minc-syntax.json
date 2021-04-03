@@ -1,0 +1,26 @@
+{
+	"name": "minc",
+	"scopeName": "source.minc",
+	"fileTypes": [
+		"minc"
+	],
+	"patterns": [
+		{ "name": "comment.line.double-slash.minc", "match": "\\/\\/.*$" },
+		{ "name": "comment.block.double-slash.minc", "begin": "\\/\\*", "end": "\\*\\/" },
+		{ "name": "keyword.operator.plus.minc", "match": "\\+" },
+		{ "name": "keyword.operator.decrement.minc", "match": "--" },
+		{ "name": "keyword.operator.increment.minc", "match": "\\+\\+" },
+		{ "name": "keyword.operator.ellipsis.minc", "match": "\\.\\.\\." },
+		{ "name": "keyword.operator.comparison.minc", "match": "!=|<=|>=|==|<|>" },
+		{ "name": "keyword.operator.bitwise.shift.minc", "match": "<<|>>" },
+		{ "name": "keyword.operator.operator.logical.minc", "match": "&&|!|\\|\\|" },
+		{ "name": "keyword.operator.assignment.compound.minc", "match": "%=|\\+=|-=|\\*=|(?<!\\()\\/=" },
+		{ "name": "keyword.operator.member-access.minc", "match": "\\.|->|::" },
+		{ "name": "constant.numeric.minc", "match": "(-?[0-9]*\\.?[0-9][0-9a-zA-Z_]*)" },
+		{ "name": "constant.language.placeholder.minc", "match": "\\$[A-Z](<[a-zA-Z_][0-9a-zA-Z_]*!?!?>)?" },
+		{ "name": "constant.language.parameter.minc", "match": "\\$0|(\\$[1-9][0-9]*)" },
+		{ "name": "string.quoted.single.minc", "match": "([0-9a-zA-Z_]*\\'[^\\'\\n]*\\')" },
+		{ "name": "string.quoted.double.minc", "match": "([0-9a-zA-Z_]*\\\"[^\\\"\\n]*\\\")" },
+		{ "name": "entity.name.minc", "match": "([a-zA-Z_][0-9a-zA-Z_]*)" }
+	]
+}

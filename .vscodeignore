@@ -1,0 +1,28 @@
+.vscode/**
+**/*.ts
+**/*.map
+.gitignore
+**/tsconfig.json
+**/tsconfig.base.json
+contributing.md
+.travis.yml
+node_modules/**
+
+# Required modules
+!node_modules/vscode-jsonrpc/**
+!node_modules/vscode-languageclient/**
+!node_modules/ws/**
+
+# Requirements for node_modules/vscode-languageclient
+!node_modules/vscode-languageserver-protocol/**
+!node_modules/vscode-languageserver-types/**
+!node_modules/semver/**
+!node_modules/lru-cache/**
+!node_modules/yallist/**
+!node_modules/minimatch/**
+!node_modules/brace-expansion/**
+!node_modules/concat-map/**
+!node_modules/balanced-match/**
+
+# Requirements for node_modules/ws
+!node_modules/async-limiter/**

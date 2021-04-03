@@ -1,0 +1,173 @@
+{
+	"name": "minc-vscode",
+	"displayName": "Minc",
+	"description": "Minc language support for Visual Studio Code",
+	"author": "RcSepp",
+	"publisher": "Minc",
+	"license": "MIT",
+	"version": "0.0.1",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/RcSepp/minc-vscode.git"
+	},
+	"categories": [],
+	"keywords": [
+		"multi-root ready"
+	],
+	"engines": {
+		"vscode": "^1.55.0"
+	},
+	"icon": "images/minc-icon.png",
+	"activationEvents": [
+		"onLanguage:minc",
+		"onDebugResolve:minc"
+	],
+	"main": "./out/extension",
+	"contributes": {
+		"languages": [
+			{
+				"id": "minc",
+				"aliases": [
+					"Minc"
+				],
+				"extensions": [
+					".minc"
+				],
+				"configuration": "./minc-language-configuration.json"
+			}
+		],
+		"semanticTokenScopes": [
+			{
+				"scopes": {
+					"keyword": [
+						"keyword.control.semantic.minc"
+					]
+				}
+			}
+		],
+		"grammars": [
+			{
+				"language": "minc",
+				"path": "./minc-syntax.json",
+				"scopeName": "source.minc"
+			}
+		],
+		"breakpoints": [
+			{
+				"language": "minc"
+			}
+		],
+		"debuggers": [
+			{
+				"type": "minc",
+				"label": "Minc Debug",
+				"configurationAttributes": {
+					"launch": {
+						"required": [
+							"program"
+						],
+						"properties": {
+							"program": {
+								"type": "string",
+								"description": "Absolute path to the main source file.",
+								"default": "${workspaceFolder}/${command:AskForProgramName}"
+							},
+							"args": {
+								"type": "array",
+								"description": "Command line arguments passed to the program.",
+								"default": []
+							},
+							"cwd": {
+								"type": "string",
+								"description": "The working directory of the program.",
+								"default": "."
+							},
+							"stopOnEntry": {
+								"type": "boolean",
+								"description": "Automatically stop after launch.",
+								"default": false
+							},
+							"traceAnonymousBlocks": {
+								"type": "boolean",
+								"description": "Show anonymous block expressions in the call stack.",
+								"default": false
+							},
+							"trace": {
+								"type": "boolean",
+								"description": "Enable logging of the Debug Adapter Protocol.",
+								"default": true
+							}
+						}
+					}
+				},
+				"initialConfigurations": [
+					{
+						"type": "minc",
+						"request": "launch",
+						"name": "Ask for file name",
+						"program": "${workspaceFolder}/${command:AskForProgramName}",
+						"stopOnEntry": true
+					}
+				],
+				"configurationSnippets": [
+					{
+						"label": "Minc Debug: Launch",
+						"description": "A new configuration for 'debugging' a user selected Minc file.",
+						"body": {
+							"type": "minc",
+							"request": "launch",
+							"name": "Ask for file name",
+							"program": "^\"\\${workspaceFolder}/\\${command:AskForProgramName}\"",
+							"stopOnEntry": true
+						}
+					}
+				],
+				"variables": {
+				}
+			}
+		],
+		"commands": [
+			{
+				"command": "minc.streamLogs",
+				"title": "Start Stream Logs into minc.logStreamingPort"
+			}
+		],
+		"configuration": {
+			"type": "object",
+			"title": "Minc",
+			"properties": {
+				"minc.maxNumberOfProblems": {
+					"scope": "resource",
+					"type": "number",
+					"default": 100,
+					"description": "Controls the maximum number of problems produced by the server."
+				},
+				"minc.logStreamingPort": {
+					"type": "number",
+					"default": 7000,
+					"scope": "window",
+					"description": "The WebSocket port to stream LSP log data into."
+				}
+			}
+		}
+	},
+	"scripts": {
+		"vscode:prepublish": "npm run compile",
+		"compile": "tsc -b",
+		"watch": "tsc -b -w"
+	},
+	"dependencies": {
+		"vscode-languageclient": "^7.0.0",
+		"ws": "^6.0.0"
+	},
+	"devDependencies": {
+		"@types/mocha": "^7.0.2",
+		"@types/node": "^12.12.0",
+		"@types/vscode": "^1.55.0",
+		"@types/ws": "^6.0.0",
+		"@typescript-eslint/parser": "^2.3.0",
+		"eslint": "^6.4.0",
+		"mocha": "^8.0.1",
+		"typescript": "^3.9.4"
+	}
+}
