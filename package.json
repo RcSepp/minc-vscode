@@ -157,6 +157,7 @@
 		"watch": "tsc -b -w"
 	},
 	"dependencies": {
+		"command-exists-promise": "^2.0.2",
 		"vscode-languageclient": "^7.0.0",
 		"ws": "^6.0.0"
 	},

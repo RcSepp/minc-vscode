@@ -1,4 +1,5 @@
 import * as cp from 'child_process';
+import * as commandExists from 'command-exists-promise';
 import * as path from 'path';
 import * as net from 'net';
 import {
@@ -8,8 +9,10 @@ import {
 	DebugAdapterDescriptorFactory,
 	DebugAdapterExecutable,
 	DebugSession,
+	env,
 	ExtensionContext,
 	OutputChannel,
+	Uri,
 	window,
 	workspace,
 } from 'vscode';
@@ -28,7 +31,7 @@ import {
 import * as WebSocket from 'ws';
 
 const MINC_BIN = process.env['MINC_BIN'];
-const MINC_PATH = path.join(MINC_BIN, 'minc');
+const MINC_PATH = MINC_BIN === undefined ? 'minc' : path.join(MINC_BIN, 'minc');
 
 let client: LanguageClient;
 
@@ -171,6 +174,49 @@ class DebugAdapterFactory implements DebugAdapterDescriptorFactory
 	}
 }
 
+async function validateMinc()
+{
+	// Check if minc binary is installed
+	if (await commandExists(MINC_PATH) == false) { // If minc binary wasn't found, ...
+		const result = await window.showErrorMessage("Can't find minc binary. " +
+			"If minc is installed, make sure it is on PATH or set MINC_BIN environment variable.",
+			"Install minc from github"
+		);
+		if (result == "Install minc from github")
+			env.openExternal(Uri.parse('https://github.com/RcSepp/minc'));
+		return false;
+	}
+
+	// Validate minc binary
+	var binaryIsValid = false;
+	for await (const output of cp.exec(MINC_PATH + ' help').stdout) {
+		if (output.startsWith("Minimal Compiler"))
+			binaryIsValid = true;
+	};
+	if (!binaryIsValid) {
+		await window.showErrorMessage("Minc binary failed sanity check. " +
+			"Language server may not run."
+		);
+		// Continue if binaryIsValid == false, because Minc may not actually be broken
+	}
+
+	// Check if environment variables MINC_PATH is set
+	if (!process.env['MINC_PATH']){
+		window.showWarningMessage("MINC_PATH not set. " +
+			"Minc wouldn't be able to find packages."
+		);
+	}
+
+	// Check if environment variables MINC_EXT is set
+	if (!process.env['MINC_EXT']){
+		window.showWarningMessage("MINC_EXT not set. " +
+			"Minc wouldn't be able to find extensions."
+		);
+	}
+
+	return true; 
+}
+
 function startServer(outputChannel: OutputChannel)
 {
 	const server = cp.exec(MINC_PATH + ' server');
@@ -256,16 +302,22 @@ export function activate(context: ExtensionContext)
 		socket = new WebSocket(`ws://localhost:${socketPort}`);
 	});
 
-	// Start server
-	startServer(outputChannel);
-	outputChannel.appendLine("Server started");
+	validateMinc().then(valid => {
+		if (valid) {
+			// Start server
+			startServer(outputChannel);
+			outputChannel.appendLine("Server started");
 
-	// Start client
-	setTimeout(() => {
-		startClient(outputChannel, socket);
-		outputChannel.appendLine("Client started");
-	}, 1000); //TODO: Why is this still necessary when using client timeout != 0?
-			  //Note: Without this the client fails to connect unless activated at startup.
+			// Start client
+			setTimeout(() => {
+				startClient(outputChannel, socket);
+				outputChannel.appendLine("Client started");
+			}, 1000); //TODO: Why is this still necessary when using client timeout != 0?
+					//Note: Without this the client fails to connect unless activated at startup.
+		}
+	}).catch(reason => {
+		window.showErrorMessage("Error during minc validation: " + reason);
+	});
 }
 
 export function deactivate(): Thenable<void> | undefined {
